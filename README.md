@@ -1,245 +1,275 @@
-# Klyp CLI
+# Klyp-CLI
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- Optional: Add other badges like build status, version, etc. if you set them up -->
 
-**Klyp** is a command-line utility designed to help you efficiently manage, package, and copy scoped project file contents and structure to your clipboard. It's optimized for preparing comprehensive context for AI models like Gemini, Claude, or OpenAI's GPT, making it easier to provide them with the necessary code and information for your prompts.
+**Klyp-CLI** is your personal assistant for packaging project files and instructions into perfectly formatted context for Large Language Models (LLMs). Stop the tedious copy-pasting and let Klyp streamline your AI interactions!
 
-## Why Klyp?
+## Why Klyp-CLI?
 
-When working with AI models for coding assistance, analysis, or documentation, providing accurate and complete context is crucial. Klyp streamlines this by:
+Tired of manually juggling code snippets, project overviews, and specific instructions every time you want to ask an LLM for help? Preparing comprehensive context for models like Gemini, Claude, or GPT can be a significant time sink and prone to errors.
 
-*   Allowing you to define **scopes** – logical groups of files relevant to a specific task or feature.
-*   Generating a clear **project structure** overview.
-*   Copying the names and full contents of all files within a scope to your clipboard in a **formatted, AI-friendly way**.
-*   Saving you from manually opening, copying, and pasting multiple files.
+Klyp-CLI is designed to:
 
-## Features
+*   🚀 **Save You Time & Effort:** Define your context needs once, then recall them instantly. No more hunting for files or repeatedly typing out system messages.
+*   📋 **Eliminate Manual Copy-Pasting:** Assemble content from multiple files and instructions into a single block, copied directly to your clipboard with one command.
+*   🎯 **Ensure Consistent & Complete Context:** Provide LLMs with a well-structured overview of relevant files and their content, plus any preparatory "context files" (like project descriptions or specific instructions) and concluding "prompt files" (for specific questions or tasks).
+*   ✨ **Simplify LLM Prompting:** Focus on your prompt, not the mechanics of gathering information.
 
-*   ✨ **Scoped File Management:** Organize your project files into named scopes.
-*   🚀 **One-Liner Installation:** Quick and easy setup.
-*   📋 **Clipboard Integration:** Copies structured output directly to your clipboard.
-*   🌈 **Colorized Output:** Enhanced readability in the terminal.
-*   🔍 **Status Checking:** Verify the integrity of your scopes and find missing files.
-*   ➕ **Easy Add/Remove:** Effortlessly manage files within scopes.
-*   🎯 **Current Active Scope:** Set a default scope for even faster operations.
-*   🐍 **Python-Powered:** Cross-platform (macOS, Linux).
+## Key Features
+
+*   📁 **Scoped File Management:** Group related project files into logical "scopes" for different tasks or contexts.
+*   📄 **Context File Integration:** Associate each scope with an optional "context file" (e.g., `project_overview.md`, `system_prompt.txt`) that gets prepended to your output. This is perfect for project summaries, LLM system messages, or general instructions.
+*   ✍️ **Prompt File Integration:** Optionally append a dedicated "prompt file" (e.g., `final_questions.txt`, `llm_task.md`) at the very end of your assembled output, perfect for specific questions or tasks based on the preceding context and code.
+*   🚀 **One-Liner Installation:** Quick and easy setup for macOS & Linux.
+*   📋 **Clipboard Power (`klyp copy`):** The primary command. Assembles everything and copies it to your clipboard, ready to paste into your LLM interface.
+*   📠 **Print to Terminal (`klyp run`):** View the assembled context directly or pipe it to other tools.
+*   🌈 **Colorized Output:** Enhanced readability for commands in your terminal.
+*   🔍 **Status Checking:** Easily verify the files included in your scopes, their associated context and prompt files, and check for missing ones.
+*   ➕ **Effortless Management:** Simple commands to add/remove files, context, and prompt files.
+*   🎯 **Active Scope:** Set a default scope for even faster operations.
+*   🐍 **Python-Powered:** Cross-platform (macOS, Linux, Windows with Python).
+*   🔄 **Self-Update & Notifications:** Keep Klyp fresh with a simple `klyp update` command, and get notified of new versions.
 
 ## Prerequisites
 
-*   **Python 3.7+** (Python 3.6 might work but 3.7+ is recommended for newer features like `capture_output` in `subprocess` if used, though `klyp` doesn't currently rely heavily on advanced 3.7+ features).
-*   **pip** (Python package installer, usually comes with Python).
-*   **For Linux users:** `xclip` or `xsel` is required by the `pyperclip` library for clipboard access.
-    *   You can typically install one using your system's package manager:
-        *   Debian/Ubuntu: `sudo apt-get install xclip`
-        *   Fedora: `sudo dnf install xclip`
-        *   Arch Linux: `sudo pacman -S xclip`
+*   **Python 3.7+**
+*   **pip** (Python package installer, usually comes with Python)
+*   **For Linux users (Clipboard Access):** `xclip` or `xsel` is required by the `pyperclip` library.
+    *   Debian/Ubuntu: `sudo apt-get install xclip`
+    *   Fedora: `sudo dnf install xclip`
+    *   Arch Linux: `sudo pacman -S xclip`
+*   **For Windows users (Clipboard Access):** Usually works out-of-the-box.
 
 ## Installation
 
-### One-Liner Install (Recommended for macOS & Linux)
-
-You can install or update `klyp` with a single command. Open your terminal and run:
+The easiest way to get started on macOS & Linux is with the one-liner installation script.
 
 **Using `curl`:**
 ```bash
-curl -fsSL https://raw.githubusercontent.com/your-username/klyp-cli/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/dvvolynkin/klyp-cli/main/install.sh | bash
 ```
 
 **Or using `wget`:**
 ```bash
-wget -qO- https://raw.githubusercontent.com/your-username/klyp-cli/main/install.sh | bash
+wget -qO- https://raw.githubusercontent.com/dvvolynkin/klyp-cli/main/install.sh | bash
 ```
 
-*(Remember to replace `your-username`, `klyp-cli`, and `main` with your actual GitHub username, repository name, and default branch if they differ.)*
-
-The installation script will:
-1.  Download the `klyp` script.
+This script will:
+1.  Download the `klyp.py` script.
 2.  Install it to `~/.local/bin/klyp` (a common directory for user-installed executables).
 3.  Make it executable.
 4.  Install required Python dependencies (`pyperclip`, `colorama`) using `pip`.
 5.  Provide guidance if `~/.local/bin` is not in your `PATH`.
 
 **After installation:**
-You might need to open a new terminal session or source your shell configuration file (e.g., `source ~/.bashrc`, `source ~/.zshrc`) for the `klyp` command to be available system-wide.
-Verify by typing: `klyp --version`
+You might need to open a new terminal session or source your shell configuration file (e.g., `source ~/.bashrc`, `source ~/.zshrc`) for the `klyp` command to be available.
+Verify by typing:
+```bash
+klyp --version
+```
 
-### Manual Installation
+## How It Works: Scopes, Context Files, and Prompt Files
 
-If you prefer, or if the one-liner doesn't work for your environment:
+The core idea behind Klyp-CLI is organizing your project information into **scopes**.
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/your-username/klyp-cli.git
-    cd klyp-cli
-    ```
-    *(Replace with your repository URL)*
-2.  **Run the installation script:**
-    ```bash
-    ./install.sh
-    ```
+*   A **Scope** is simply a named collection of files relevant to a specific task. For example, you might have a `frontend` scope with your UI components, or a `backend_api` scope with server-side logic files.
+*   Each scope can optionally have one **Context File**. This is a text or markdown file (e.g., `project_description.md`, `llm_instructions.txt`) containing any preparatory information, system messages, or general instructions you want to include when you use that scope. Klyp will place the content of this file at the very beginning of the output.
+*   Additionally, each scope can optionally have one **Prompt File**. This file's content is appended at the *end* of the Klyp output, after all code files. It's ideal for your specific questions to the LLM, task instructions, or any text that should follow the provided context and code.
+
+When you run `klyp copy <scope_name>`:
+1.  Klyp reads the content of the **Context File** (if defined for that scope).
+2.  It then lists the paths of all **code files** in the scope.
+3.  Then, it includes the full content of each of those **code files**.
+4.  Finally, it appends the content of the **Prompt File** (if defined for that scope).
+5.  All this is packaged into a single, neatly formatted text block and copied to your clipboard.
 
 ## Usage
 
-Once `klyp` is installed and in your `PATH`, you can use it from any project directory.
+Once `klyp` is installed, navigate to your project's root directory in the terminal.
 
 ### 1. Initialize Klyp
-In your project's root directory, run:
+Start by initializing Klyp in your project:
 ```bash
 klyp init
 ```
-This creates a `.klyp.json` configuration file and prompts you to name your first scope (e.g., `main_context`, `frontend_api`). This scope will be set as the current active scope.
+This creates a `.klyp.json` configuration file and a default scope named `default`, setting it as the active scope.
 
 ### 2. Manage Scopes
-A "scope" is a named collection of files.
-
-*   **View current and available scopes:**
+*   **List scopes:**
     ```bash
     klyp scope
     ```
-*   **Set a scope as active (or create a new one):**
+*   **Create a new scope & set it active:**
     ```bash
-    klyp scope <scope_name>
+    klyp use <new_scope_name>
     ```
-    Example: `klyp scope backend_logic`
+    Example: `klyp use frontend_feature`
+    (You can also use `klyp scope add <name>` and `klyp scope set <name>`)
 
-### 3. Add Files to a Scope
-*   **Add to the current active scope:**
-    ```bash
-    klyp add ./src/utils.py
-    klyp add ./config/settings.json
-    ```
-*   **Add to a specific scope:**
-    ```bash
-    klyp add ./docs/README.md documentation_scope
-    ```
+### 3. Add Files, Context, and Prompts to a Scope
 
-### 4. Remove Files from a Scope
-*   **Remove from the current active scope:**
+*   **Add code files to the current active scope:**
     ```bash
-    klyp remove ./src/old_feature.py
+    klyp add ./src/component.js ./styles/main.css
     ```
-*   **Remove from a specific scope:**
+*   **Add code files to a specific scope:**
     ```bash
-    klyp remove ./config/settings.json documentation_scope
+    klyp add ./api/routes.py ./api/models.py backend_api_scope
     ```
-
-### 5. Check Scope Status
-See which files are tracked and if any are missing:
-*   **Status of all scopes:**
+*   **Set (or change) the Context File for the current active scope:**
+    This file's content will be included first in the output.
     ```bash
-    klyp status
+    klyp add --context ./docs/project_overview.md
     ```
-*   **Status of a specific scope:**
+*   **Set the Context File for a specific scope:**
     ```bash
-    klyp status backend_logic
+    klyp add --context ./prompts/api_instructions.txt backend_api_scope
+    ```
+*   **Set (or change) the Prompt File for the current active scope:**
+    This file's content will be included last in the output.
+    ```bash
+    klyp add --prompt ./prompts/llm_questions.md
+    ```
+*   **Set the Prompt File for a specific scope:**
+    ```bash
+    klyp add --prompt ./prompts/task_specific_questions.txt backend_api_scope
     ```
 
-### 6. Run a Scope (Copy to Clipboard)
-This is the primary action: it gathers the structure and content of files in a scope and copies it to your clipboard.
-*   **Run the current active scope:**
+### 4. The Magic: Copying Context to Clipboard
+This is the primary command you'll use to prepare context for your LLM.
+
+*   **Copy the current active scope's content to clipboard:**
     ```bash
-    klyp
+    klyp copy
     ```
-    or
+*   **Copy a specific scope's content to clipboard:**
+    ```bash
+    klyp copy <scope_name>
+    ```
+    Example: `klyp copy frontend_feature`
+
+Now, just paste (Ctrl+V or Cmd+V) into your LLM chat interface!
+
+### 5. Other Useful Commands
+
+*   **Print scope content to terminal (instead of clipboard):**
     ```bash
     klyp run
-    ```
-*   **Run a specific scope by name:**
-    ```bash
-    klyp <scope_name>
-    ```
-    Example: `klyp frontend_api`
-    or
-    ```bash
     klyp run <scope_name>
     ```
-    Example: `klyp run frontend_api`
-
-If any files in the scope are missing, `klyp run` will fail and list the problematic files.
-
-### 7. Get Help
-*   **General help:**
+*   **Check scope status (see included files, context file, prompt file, and any missing files):**
+    ```bash
+    klyp status
+    klyp status <scope_name>
+    ```
+*   **Remove files, context, or prompt file:**
+    ```bash
+    klyp remove ./src/old_component.js # From active scope
+    klyp remove ./docs/old_readme.md old_docs_scope
+    klyp remove --context # Remove context from active scope
+    klyp remove --context old_docs_scope
+    klyp remove --prompt # Remove prompt file from active scope
+    klyp remove --prompt old_docs_scope
+    ```
+*   **Update Klyp to the latest version:**
+    ```bash
+    klyp update
+    ```
+*   **Get help:**
     ```bash
     klyp --help
-    ```
-*   **Help for a specific command:**
-    ```bash
     klyp <command> --help
     ```
-    Example: `klyp add --help`
 
 ## Example Workflow
 
-```bash
-# Navigate to your project
-cd my_ai_project
+Let's say you're working on a new feature for your web app.
 
-# Initialize klyp and create a 'core' scope
-klyp init
-# (Enter 'core' when prompted for scope name)
+1.  **Initialize Klyp in your project:**
+    ```bash
+    cd my_web_app_project
+    klyp init
+    ```
 
-# Add some key files to the 'core' scope
-klyp add ./main.py
-klyp add ./src/models.py
-klyp add ./src/api/endpoints.py
+2.  **Create a scope for this feature and make it active:**
+    ```bash
+    klyp use auth_feature
+    ```
 
-# Check the status
-klyp status
+3.  **Add relevant code files:**
+    ```bash
+    klyp add ./src/auth/login.js ./src/auth/api.js ./src/components/AuthForm.vue
+    ```
 
-# Create a new scope for documentation tasks
-klyp scope docs
+4.  **Add a context file with general instructions for the LLM:**
+    Create a file, say `llm_auth_prompt_setup.md`, with content like:
+    ```markdown
+    You are an expert Vue.js and Node.js developer.
+    The following files are part of an authentication feature.
+    Please help me by reviewing the code for security best practices and suggesting improvements.
+    Focus on the interaction between the frontend components and the backend API.
+    ```
+    Then add it to the scope:
+    ```bash
+    klyp add --context ./llm_auth_prompt_setup.md
+    ```
 
-# Add documentation files to the 'docs' scope
-klyp add README.md
-klyp add ./docs/usage.md
+5.  **(Optional) Add a prompt file with specific questions:**
+    Create a file, say `llm_review_questions.md`, with content like:
+    ```markdown
+    Based on the provided context and code:
+    1. Are there any obvious race conditions?
+    2. How could the `AuthForm.vue` component be made more accessible?
+    3. Suggest an alternative approach for handling API tokens.
+    ```
+    Then add it to the scope:
+    ```bash
+    klyp add --prompt ./llm_review_questions.md
+    ```
 
-# Now, to give context about the core logic to an AI:
-klyp core # or `klyp run core`
-# The structure and content of main.py, models.py, and endpoints.py are now in your clipboard!
+6.  **Check the status (optional):**
+    ```bash
+    klyp status auth_feature
+    ```
 
-# Later, to give context about documentation:
-klyp docs
-# README.md and usage.md are now in your clipboard.
-```
-
-## Configuration File
-
-Klyp stores its configuration in a `.klyp.json` file in the root of your project directory. You can manually inspect or edit this file, but it's generally recommended to use the `klyp` commands.
+7.  **Copy everything to clipboard for your LLM:**
+    ```bash
+    klyp copy auth_feature
+    ```
+    Now, the content of `llm_auth_prompt_setup.md`, followed by the paths and contents of `login.js`, `api.js`, and `AuthForm.vue`, and finally the content of `llm_review_questions.md`, are all in your clipboard, ready to be pasted into your LLM prompt!
 
 ## Uninstallation
 
-To uninstall `klyp`:
-
-1.  Navigate to the directory where you originally cloned `klyp-cli` (if you installed manually) or simply run the uninstaller if you have it.
-    Alternatively, you can re-download just the uninstaller:
+1.  If you don't have `uninstall.sh` from the initial installation (e.g., if you cloned the repo), download it from the Klyp repository:
     ```bash
-    curl -fsSL https://raw.githubusercontent.com/your-username/klyp-cli/main/uninstall.sh -o uninstall_klyp.sh
+    curl -fsSL https://raw.githubusercontent.com/dvvolynkin/klyp-cli/main/uninstall.sh -o uninstall_klyp.sh
     chmod +x uninstall_klyp.sh
+    ```
+2.  Run the uninstaller:
+    ```bash
     ./uninstall_klyp.sh
     ```
-2.  The script will remove the `klyp` executable from `~/.local/bin/klyp`.
+This will typically remove the `klyp` executable from `~/.local/bin/klyp`.
 
 Python dependencies (`pyperclip`, `colorama`) are not automatically uninstalled as other tools might use them. If you wish to remove them:
 ```bash
 python3 -m pip uninstall pyperclip colorama
 ```
-
 Project-specific `.klyp.json` files will remain in your projects unless you manually delete them.
 
 ## Contributing
 
 Contributions are welcome! If you have ideas for improvements, new features, or bug fixes, please:
 
-1.  Fork the repository.
+1.  Fork the repository (`https://github.com/dvvolynkin/klyp-cli.git`).
 2.  Create a new branch (`git checkout -b feature/your-feature-name`).
 3.  Make your changes.
 4.  Commit your changes (`git commit -am 'Add some feature'`).
 5.  Push to the branch (`git push origin feature/your-feature-name`).
-6.  Open a Pull Request.
-
-Please ensure your code adheres to basic Python best practices and include updates to documentation if necessary.
+6.  Open a Pull Request against the `main` branch of the original repository.
 
 ## Issues
 
-If you encounter any bugs or have issues, please report them via the [GitHub Issues](https://github.com/your-username/klyp-cli/issues) page for this repository.# klyp-cli
+If you encounter any bugs or have issues, please report them via the [GitHub Issues](https://github.com/dvvolynkin/klyp-cli/issues) page for this repository.
+```
